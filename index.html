@@ -154,10 +154,107 @@
     .ann-body { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.85); }
 
     .footer { text-align: center; padding: 20px; font-size: 12px; color: rgba(255,255,255,0.35); }
+
+    /* 彩蛋图标 */
+    .easter-icon {
+      position: fixed; top: 16px; left: 16px; z-index: 100;
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+      animation: easterPulse 2s ease-in-out infinite;
+      transition: transform 0.2s;
+    }
+    .easter-icon:active { transform: scale(0.9); }
+    .easter-icon.show { display: flex; }
+    .easter-icon svg { width: 22px; height: 22px; color: #fff; }
+    @keyframes easterPulse {
+      0%,100% { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4); }
+      50% { box-shadow: 0 4px 28px rgba(245, 158, 11, 0.7); }
+    }
+
+    /* 彩蛋弹窗 */
+    .easter-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .easter-overlay.show { display: flex; }
+    .easter-modal {
+      width: 100%; max-width: 320px;
+      background: rgba(20, 20, 35, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 20px; padding: 28px 24px;
+      animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.8) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .easter-modal-title {
+      font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 6px;
+      color: #f59e0b;
+    }
+    .easter-modal-desc {
+      font-size: 13px; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 20px;
+    }
+    .easter-input {
+      width: 100%; height: 48px; padding: 0 16px;
+      border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);
+      background: rgba(255,255,255,0.05); color: #fff; font-size: 15px;
+      outline: none; text-align: center; letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+    .easter-input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+    .easter-input:focus { border-color: rgba(245, 158, 11, 0.6); background: rgba(255,255,255,0.08); }
+    .easter-btn {
+      width: 100%; height: 46px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    .easter-btn:active { transform: scale(0.98); }
+    .easter-close {
+      position: absolute; top: 12px; right: 16px;
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.4); cursor: pointer; font-size: 20px;
+    }
+    .easter-secret {
+      display: none; text-align: center; padding: 10px 0;
+    }
+    .easter-secret.show { display: block; }
+    .easter-secret-text {
+      font-size: 15px; color: #f59e0b; font-weight: 600;
+      animation: secretGlow 1.5s ease-in-out infinite;
+    }
+    @keyframes secretGlow {
+      0%,100% { text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+      50% { text-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+    }
   </style>
 </head>
 <body>
   <div class="bg"></div>
+
+  <!-- 彩蛋图标 -->
+  <div class="easter-icon" id="easterIcon" onclick="openEasterModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+    </svg>
+  </div>
+
+  <!-- 彩蛋弹窗 -->
+  <div class="easter-overlay" id="easterOverlay" onclick="closeEasterModal(event)">
+    <div class="easter-modal" onclick="event.stopPropagation()">
+      <div class="easter-modal-title">彩蛋</div>
+      <div class="easter-modal-desc">输入验证码解锁隐藏内容</div>
+      <input type="text" class="easter-input" id="easterInput" placeholder="请输入验证码" autocomplete="off" />
+      <button class="easter-btn" onclick="checkEaster()">确认</button>
+      <div class="easter-secret" id="easterSecret">
+        <div class="easter-secret-text">你发现了彩蛋！你是真正的怀星人 🌟</div>
+      </div>
+    </div>
+  </div>
 
   <div class="login-wrap" id="loginPage">
     <div class="logo">怀</div>
@@ -221,6 +318,45 @@
 
   <script>
     const CORRECT_NAME = "怀星服务器";
+
+    // 彩蛋逻辑
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+    const easterIcon = document.getElementById("easterIcon");
+
+    document.querySelector(".logo").addEventListener("click", () => {
+      logoClickCount++;
+      clearTimeout(logoClickTimer);
+      logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+      if (logoClickCount >= 5) {
+        logoClickCount = 0;
+        easterIcon.classList.add("show");
+      }
+    });
+
+    function openEasterModal() {
+      document.getElementById("easterOverlay").classList.add("show");
+      document.getElementById("easterInput").value = "";
+      document.getElementById("easterSecret").classList.remove("show");
+      setTimeout(() => document.getElementById("easterInput").focus(), 100);
+    }
+
+    function closeEasterModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById("easterOverlay").classList.remove("show");
+    }
+
+    function checkEaster() {
+      const val = document.getElementById("easterInput").value.trim();
+      if (val === "1043816309") {
+        document.getElementById("easterSecret").classList.add("show");
+      }
+      // 输入错误不做任何提示
+    }
+
+    document.getElementById("easterInput").addEventListener("keypress", e => {
+      if (e.key === "Enter") checkEaster();
+    });
 
     // ========================================================
     // 公告数据区：要发新公告就改这里
