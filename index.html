@@ -176,60 +176,124 @@
     /* 彩蛋弹窗 */
     .easter-overlay {
       position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
       display: none; align-items: center; justify-content: center;
       padding: 24px;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .easter-overlay.show { display: flex; }
+    .easter-overlay.show { 
+      display: flex; 
+      opacity: 1;
+    }
     .easter-modal {
-      width: 100%; max-width: 320px;
-      background: rgba(20, 20, 35, 0.95);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 20px; padding: 28px 24px;
-      animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      width: 100%; max-width: 340px;
+      background: linear-gradient(145deg, rgba(25, 25, 45, 0.98) 0%, rgba(15, 15, 30, 0.98) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 24px; 
+      padding: 32px 26px;
+      opacity: 0;
+      transform: scale(0.9) translateY(30px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(245, 158, 11, 0.1);
+    }
+    .easter-overlay.show .easter-modal {
+      animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.8) translateY(20px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
+      0% { opacity: 0; transform: scale(0.85) translateY(25px); }
+      50% { opacity: 1; transform: scale(1.02) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
+    .easter-modal::before {
+      content: "";
+      position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, transparent 50%, rgba(239, 68, 68, 0.1) 100%);
+      pointer-events: none;
+    }
+    .easter-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px; 
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.5); 
+      cursor: pointer; 
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .easter-close:hover { 
+      background: rgba(255,255,255,0.1); 
+      color: rgba(255,255,255,0.8);
+    }
+    .easter-close:active { transform: scale(0.9); }
     .easter-modal-title {
-      font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 6px;
+      font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px;
       color: #f59e0b;
+      letter-spacing: 2px;
     }
     .easter-modal-desc {
-      font-size: 13px; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 20px;
+      font-size: 14px; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 24px;
+      line-height: 1.5;
     }
     .easter-input {
-      width: 100%; height: 48px; padding: 0 16px;
-      border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);
-      background: rgba(255,255,255,0.05); color: #fff; font-size: 15px;
-      outline: none; text-align: center; letter-spacing: 3px;
-      margin-bottom: 16px;
+      width: 100%; height: 52px; padding: 0 20px;
+      border-radius: 14px; 
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      background: rgba(255,255,255,0.04); 
+      color: #fff; 
+      font-size: 16px;
+      outline: none; 
+      text-align: center; 
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
     }
-    .easter-input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 1px; }
-    .easter-input:focus { border-color: rgba(245, 158, 11, 0.6); background: rgba(255,255,255,0.08); }
+    .easter-input::placeholder { 
+      color: rgba(255,255,255,0.25); 
+      letter-spacing: 1px; 
+    }
+    .easter-input:focus { 
+      border-color: rgba(245, 158, 11, 0.5); 
+      background: rgba(255,255,255,0.07); 
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+    }
     .easter-btn {
-      width: 100%; height: 46px; border-radius: 12px; border: none;
+      width: 100%; height: 50px; border-radius: 14px; border: none;
       background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-      color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+      color: #fff; font-size: 16px; font-weight: 700; 
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+      transition: all 0.3s;
     }
-    .easter-btn:active { transform: scale(0.98); }
-    .easter-close {
-      position: absolute; top: 12px; right: 16px;
-      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,0.4); cursor: pointer; font-size: 20px;
+    .easter-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(245, 158, 11, 0.45);
+    }
+    .easter-btn:active { 
+      transform: translateY(0) scale(0.98); 
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
     }
     .easter-secret {
-      display: none; text-align: center; padding: 10px 0;
+      display: none; 
+      text-align: center; 
+      padding: 16px 0 8px;
+      animation: secretIn 0.4s ease-out;
     }
     .easter-secret.show { display: block; }
+    @keyframes secretIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .easter-secret-text {
-      font-size: 15px; color: #f59e0b; font-weight: 600;
-      animation: secretGlow 1.5s ease-in-out infinite;
+      font-size: 16px; color: #f59e0b; font-weight: 700;
+      animation: secretGlow 2s ease-in-out infinite;
+      letter-spacing: 1px;
     }
     @keyframes secretGlow {
-      0%,100% { text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
-      50% { text-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+      0%,100% { text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+      50% { text-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
     }
   </style>
 </head>
@@ -246,6 +310,7 @@
   <!-- 彩蛋弹窗 -->
   <div class="easter-overlay" id="easterOverlay" onclick="closeEasterModal(event)">
     <div class="easter-modal" onclick="event.stopPropagation()">
+      <div class="easter-close" onclick="closeEasterModal(event)">✕</div>
       <div class="easter-modal-title">彩蛋</div>
       <div class="easter-modal-desc">输入验证码解锁隐藏内容</div>
       <input type="text" class="easter-input" id="easterInput" placeholder="请输入验证码" autocomplete="off" />
@@ -335,15 +400,17 @@
     });
 
     function openEasterModal() {
-      document.getElementById("easterOverlay").classList.add("show");
+      const overlay = document.getElementById("easterOverlay");
+      overlay.classList.add("show");
       document.getElementById("easterInput").value = "";
       document.getElementById("easterSecret").classList.remove("show");
-      setTimeout(() => document.getElementById("easterInput").focus(), 100);
+      setTimeout(() => document.getElementById("easterInput").focus(), 150);
     }
 
     function closeEasterModal(e) {
-      if (e && e.target !== e.currentTarget) return;
-      document.getElementById("easterOverlay").classList.remove("show");
+      const overlay = document.getElementById("easterOverlay");
+      if (e && e.target !== e.currentTarget && !e.target.classList.contains("easter-close")) return;
+      overlay.classList.remove("show");
     }
 
     function checkEaster() {
@@ -362,6 +429,14 @@
     // 公告数据区：要发新公告就改这里
     // ========================================================
     const announcements = [
+      {
+        id: 6,
+        title: "公告新加彩蛋",
+        author: "管理",
+        date: "2026-07-13",
+        time: "2026-07-13 09:00:00",
+        content: "找到并发视频，群里面必须得拉10个人，也是得拉视频\n找cq_小乐领600钻以内的模组"
+      },
       {
         id: 5,
         title: "网页优化页面",
